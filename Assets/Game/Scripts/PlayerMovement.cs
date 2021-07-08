@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float touchSensitivityDamping;
 
     private Vector2 previousTouchPosition;
+    private Vector3 previousPlayerPosition;
+    private bool turningOnXaxis = true;
     
 
     // Update is called once per frame
@@ -32,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
         
 
         if (TouchManager.TouchCount != 0)
-        { 
+        {
             var touch = TouchManager.GetTouch(0);
             if (touch.phase == TouchPhase.Began)
             {
@@ -40,10 +42,40 @@ public class PlayerMovement : MonoBehaviour
             }
             if (touch.phase == TouchPhase.Moved)
             {
+                bool grounded = Physics.Raycast(transform.position, Vector3.down, 5f,1);
                 float distance = previousTouchPosition.x - touch.position.x ;
                 previousTouchPosition = touch.position;
-                transform.position = new Vector3(Mathf.Clamp(transform.position.x + distance/ touchSensitivityDamping, -3.5f, 3.5f), transform.position.y, transform.position.z);
+                if (grounded)
+                {
+                    if (turningOnXaxis)
+                    {
+                        previousPlayerPosition = transform.position;
+                        transform.position = new Vector3(transform.position.x + distance / touchSensitivityDamping, transform.position.y, transform.position.z); 
+                    }
+                    else
+                    {
+                        previousPlayerPosition = transform.position;
+                        transform.position = new Vector3(transform.position.x , transform.position.y, transform.position.z + distance / touchSensitivityDamping); 
+                    }
+                    
+                }
+                else
+                {
+                    if (turningOnXaxis)
+                    {
+                        transform.position = new Vector3(previousPlayerPosition.x, previousPlayerPosition.y, transform.position.z); 
+                    }
+                    else
+                    {
+                        transform.position = new Vector3(transform.position.x, previousPlayerPosition.y, previousPlayerPosition.z); 
+                    }
+                    
+                }
+                
             }
         }
     }
+    
 }
+
+
