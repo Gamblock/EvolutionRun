@@ -6,55 +6,26 @@ using Doozy;
 
 public class LevelManager : MonoBehaviour
 {
-    [SerializeField] private LevelViewModel _levelView;
     [SerializeField] private Level _level;
     [SerializeField] private PlayerBehaviour player;
-    [SerializeField] private Canvas progressionBar;
-    
+    [SerializeField] private CameraFollow mainCamera;
+
     private GameObject levelCurrent;
     private int currentPoints;
-    private int nextStagePoints;
-   
+    private PlayerBehaviour playerBehaviour;
+
     private void Start()
     { 
-        Instantiate(_level.levelPrefab);
-        nextStagePoints = _level.scoreToChangeStage; 
-        player = Instantiate(player);
-      progressionBar.transform.parent = player.transform;
-      currentPoints = 0;
-      SetCurrentPoints(_level.startingPoints);
+        levelCurrent = Instantiate(_level.levelPrefab);
+        playerBehaviour = Instantiate(player);
+        playerBehaviour.SetData(_level.scoreToChangeStage,_level.maxPoints,_level.startingPoints);
+        mainCamera.SetPlayer(player.transform);
+        currentPoints = 0;
     }
-
-    public void SetCurrentPoints(int pointChange)
-    {
-        if (currentPoints >= 0)
-        {
-            currentPoints +=  pointChange;
-            _levelView.currentPoints.Value = currentPoints;
-            _levelView.currentProgress.Value =  (float) currentPoints / _level.maxPoints;
-        }
-        else
-        {
-            DestroyLevel();
-        }
-        
-        if (currentPoints >= nextStagePoints)
-        {
-            nextStagePoints += _level.scoreToChangeStage;
-            player.ChangeStage(currentPoints/_level.scoreToChangeStage);
-        }
-
-        if (currentPoints < nextStagePoints - _level.scoreToChangeStage)
-        {
-            nextStagePoints = nextStagePoints - _level.scoreToChangeStage;
-            player.ChangeStage(currentPoints/_level.scoreToChangeStage);
-        }
-    }
-
-    private void DestroyLevel()
+    public void DestroyLevel()
     {
         Destroy(levelCurrent);
-        Destroy(player);
+        Destroy(playerBehaviour.gameObject);
     }
     
 }

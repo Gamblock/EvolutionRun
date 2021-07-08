@@ -11,7 +11,7 @@ public class LevelViewModel : ScriptableObject
     public ObservableVariable<float> currentProgress = new ObservableVariable<float>();
     public ObservableVariable<int> currentPoints = new ObservableVariable<int>();
 
-    public event Action OnPlayLevelButtonPressedEvent;
+    public event Action OnPlayLevelButtonPressedEvent = () => {};
 
     public void OnPlayLevelButtonPressed()
     {
