@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2790726c908f97468d158217a143a86, type: 3}
   m_Name: Level0
   m_EditorClassIdentifier: 
-  pointsToProgress: 0
-  maxPoints: 50
-  scoreToChangeStage: 20
-  startingPoints: 10
-  levelPrefab: {fileID: 8521316072480516762, guid: 8fe881db9dac3ac4db461f793987167d,
+  stageToProgress: 4
+  maxStges: 5
+  startingStage: 0
+  boss: {fileID: 7055715121666796149, guid: edf6a9ad200eea94cb2ee5d8c24df040, type: 3}
+  bossSpawnPoint: {fileID: 5995613477827174051, guid: edf6a9ad200eea94cb2ee5d8c24df040,
+    type: 3}
+  currentLevelSpline: {fileID: 8576179631868810308, guid: 1033220e87036334aaae5f16b78fb7eb,
     type: 3}
