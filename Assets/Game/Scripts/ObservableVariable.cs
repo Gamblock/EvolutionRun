@@ -6,9 +6,7 @@ using UnityEngine;
 public class ObservableVariable<T>
 {
     [SerializeField] T _value;
-
     public event Action<T, T> OnValueChanged;
-
     public T Value
     {
         get => _value;

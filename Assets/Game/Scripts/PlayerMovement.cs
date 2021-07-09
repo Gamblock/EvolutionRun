@@ -56,7 +56,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void InControlInput()
     {
-                
         var inputDevice = InputManager.ActiveDevice; 
         if (inputDevice != InputDevice.Null && inputDevice != TouchManager.Device) 
         { 
