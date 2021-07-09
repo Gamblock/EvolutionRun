@@ -1,24 +1,55 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using Sirenix;
+using Sirenix.OdinInspector;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine.Serialization;
 
 public class CollectableObjects : MonoBehaviour
 {
-    [SerializeField] private int pointsChangeValue;
-    [SerializeField] private IntEventChannelSO onObjectCollected;
+    public bool isArch;
+    [HideIf("isArch")] public int pointsChangeValue;
+    [HideIf("isArch")] public IntEventChannelSO onObjectCollected;
     [SerializeField] private ParticleSystem collectedParticles;
-    [SerializeField] private GameObject VisualGO;
-    
-   
+    [FormerlySerializedAs("VisualGO")] [SerializeField] private GameObject collectableVisualGO;
+    [ShowIf("isArch")] public int numberOfStagesToChange;
+    [ShowIf("isArch")] public  IntEventChannelSO onArchPassed;
+    [ShowIf("isArch")] public TextMeshProUGUI archText;
+
+    private bool justPassedAnArch;
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.CompareTag("Player"))
-        {
-           onObjectCollected.RaiseEvent(pointsChangeValue);
-           collectedParticles.Play();
-           Destroy(VisualGO);
-           Destroy(gameObject, collectedParticles.main.duration);
+        if (!isArch)
+        { 
+            if (collider.gameObject.CompareTag("Player"))
+            {
+                onObjectCollected.RaiseEvent(pointsChangeValue);
+                collectedParticles.Play();
+                Destroy(collectableVisualGO);
+                Destroy(gameObject, collectedParticles.main.duration);
+            } 
         }
+        else if(!justPassedAnArch)
+        {
+            if (collider.gameObject.CompareTag("Player"))
+            { 
+                onArchPassed.RaiseEvent(numberOfStagesToChange);
+                collectedParticles.Play();
+                Destroy(collectableVisualGO);
+                ArchCollisiondetectionDelay();
+                Destroy(archText);
+            } 
+        }
+    }
+
+    private async void ArchCollisiondetectionDelay()
+    {
+        justPassedAnArch = true;
+        await Task.Delay(TimeSpan.FromSeconds(0.5f));
+        justPassedAnArch = false;
     }
 }
