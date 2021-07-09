@@ -10,8 +10,6 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private Level _level;
     [SerializeField] private PlayerBehaviour player;
     [SerializeField] private CameraFollow mainCamera;
-    
-    
 
     private SplineComputer  levelCurrent;
     private int currentPoints;

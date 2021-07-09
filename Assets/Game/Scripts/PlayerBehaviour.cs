@@ -23,8 +23,6 @@ public class PlayerBehaviour : MonoBehaviour
     private int currentPoints;
     private GameObject currentStageGO;
     private int stagesMax;
-    
-
     private void Awake()
     {
         currentStageGO = playerStages[0];
@@ -69,7 +67,6 @@ public class PlayerBehaviour : MonoBehaviour
         follower.followSpeed = 0;
         animator.SetBool("StoppedRunning", true);
     }
-
     public void SetCurrentPoints(int pointChange)
     {
         currentPoints += pointChange;

@@ -45,7 +45,6 @@ public class CollectableObjects : MonoBehaviour
             } 
         }
     }
-
     private async void ArchCollisiondetectionDelay()
     {
         justPassedAnArch = true;
