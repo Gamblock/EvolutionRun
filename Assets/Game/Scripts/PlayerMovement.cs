@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using InControl;
@@ -8,32 +9,60 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private float touchSensitivityDamping;
+    [SerializeField] private PlayerBehaviour player;
+    [SerializeField] private VoidEventChannelSO onFinishReached;
 
     private Vector2 previousTouchPosition;
     private Vector3 previousPlayerPosition;
-    private bool turningOnXaxis = true;
+    private bool inputEnabled = true;
+    private bool grounded;
+    private float currentDistance;
     
 
     // Update is called once per frame
     void Update()
     {
-       
-        transform.position =  Vector3.MoveTowards(transform.position, transform.position + transform.forward, Time.deltaTime * speed);
+        if (inputEnabled)
+        { 
+            InControlInput(); 
+        }
+        else if(speed > 0.1f) 
+        { 
+            speed =  speed - speed / 50;
+            
+        }
+        
+        else 
+        { 
+            speed = 0; 
+            player.SendPointsOnFinish();
+        }
+    }
 
-       InControlInput();
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Finish"))
+        {
+            onFinishReached.RaiseEvent();
+            player.FinishLevel();
+        }
+        
+    }
+
+    public void ToggleInput(bool isEnabled)
+    {
+        inputEnabled = isEnabled;
     }
 
     private void InControlInput()
     {
-        var inputDevice = InputManager.ActiveDevice;
-       
-        if (inputDevice != InputDevice.Null && inputDevice != TouchManager.Device)
-        {
+                
+        var inputDevice = InputManager.ActiveDevice; 
+        if (inputDevice != InputDevice.Null && inputDevice != TouchManager.Device) 
+        { 
             TouchManager.ControlsEnabled = false; 
         }
-        
-
-        if (TouchManager.TouchCount != 0)
+        if (TouchManager.TouchCount != 0) 
         {
             var touch = TouchManager.GetTouch(0);
             if (touch.phase == TouchPhase.Began)
@@ -42,40 +71,25 @@ public class PlayerMovement : MonoBehaviour
             }
             if (touch.phase == TouchPhase.Moved)
             {
-                bool grounded = Physics.Raycast(transform.position, Vector3.down, 5f,1);
                 float distance = previousTouchPosition.x - touch.position.x ;
                 previousTouchPosition = touch.position;
-                if (grounded)
+                if (Vector3.Distance(player.transform.position, transform.position) < 2.5f)
                 {
-                    if (turningOnXaxis)
-                    {
-                        previousPlayerPosition = transform.position;
-                        transform.position = new Vector3(transform.position.x + distance / touchSensitivityDamping, transform.position.y, transform.position.z); 
-                    }
-                    else
-                    {
-                        previousPlayerPosition = transform.position;
-                        transform.position = new Vector3(transform.position.x , transform.position.y, transform.position.z + distance / touchSensitivityDamping); 
-                    }
-                    
+                    transform.position = transform.position + transform.TransformDirection(Vector3.left) * (distance / touchSensitivityDamping);
+                    currentDistance = distance;
                 }
-                else
+                else if(currentDistance < 0 && distance > 0)
                 {
-                    if (turningOnXaxis)
-                    {
-                        transform.position = new Vector3(previousPlayerPosition.x, previousPlayerPosition.y, transform.position.z); 
-                    }
-                    else
-                    {
-                        transform.position = new Vector3(transform.position.x, previousPlayerPosition.y, previousPlayerPosition.z); 
-                    }
-                    
+                    transform.position = transform.position + transform.TransformDirection(Vector3.left) * (distance / touchSensitivityDamping);
                 }
-                
-            }
-        }
+                else if(currentDistance > 0 && distance < 0)
+                {
+                    transform.position = transform.position + transform.TransformDirection(Vector3.left) * (distance / touchSensitivityDamping);
+                }
+            } 
+        } 
     }
-    
+       
 }
 
 
